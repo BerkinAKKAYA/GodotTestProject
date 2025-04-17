@@ -1,0 +1,65 @@
+[gd_scene load_steps=12 format=3 uid="uid://idty1iou26np"]
+
+[ext_resource type="PackedScene" uid="uid://ue8f37qt050m" path="res://scenes/camion.tscn" id="1_0wfyh"]
+[ext_resource type="PackedScene" uid="uid://c4by4mlsdjfvy" path="res://scenes/city.tscn" id="2_sugp2"]
+[ext_resource type="Script" uid="uid://lt0a8x3kjukf" path="res://scripts/CameraFollow.gd" id="3_sugp2"]
+[ext_resource type="Script" uid="uid://dxgd8tl64iqk" path="res://scripts/CarEntrance.gd" id="3_tbgi4"]
+[ext_resource type="Script" uid="uid://rjxkd3bsmnbs" path="res://scripts/Player.gd" id="4_jyhfs"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_0wfyh"]
+sky_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)
+ground_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)
+
+[sub_resource type="Sky" id="Sky_sugp2"]
+sky_material = SubResource("ProceduralSkyMaterial_0wfyh")
+
+[sub_resource type="Environment" id="Environment_jyhfs"]
+background_mode = 2
+sky = SubResource("Sky_sugp2")
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_jyhfs"]
+size = Vector3(4.81604, 1.94543, 3.42572)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_tbgi4"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_jyhfs"]
+
+[node name="World" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_jyhfs")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, 0.75, -0.433013, 0, 0, 0)
+shadow_enabled = true
+
+[node name="City" parent="." instance=ExtResource("2_sugp2")]
+
+[node name="Camion" parent="." instance=ExtResource("1_0wfyh")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -3, 3, 0)
+
+[node name="Area3D" type="Area3D" parent="Camion"]
+script = ExtResource("3_tbgi4")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Camion/Area3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.59735, 0.472717, -0.302094)
+shape = SubResource("BoxShape3D_jyhfs")
+
+[node name="CameraRig" type="Node3D" parent="." node_paths=PackedStringArray("target")]
+script = ExtResource("3_sugp2")
+target = NodePath("../Player")
+offset = Vector3(0, 1.5, 3.5)
+
+[node name="Camera" type="Camera3D" parent="CameraRig"]
+
+[node name="Player" type="CharacterBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 4, 6)
+script = ExtResource("4_jyhfs")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Player"]
+mesh = SubResource("CapsuleMesh_tbgi4")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Player"]
+shape = SubResource("CapsuleShape3D_jyhfs")
